@@ -99,18 +99,23 @@ class MoneyForwardDriver(object):
         logger.debug(f'start. mf_username: {mf_username}')
         self.get('https://moneyforward.com/sign_in')
         self.find_element_by_css_selector(
-            'a:nth-child(1) > img.ssoBtn').click()
+            'a#email > img.ssoBtn').click()
+        logger.debug('email btn')
         self.wait()
 
         self.find_element_by_css_selector(
-            'input.inputItem').send_keys(mf_username)
-        self.find_element_by_css_selector('input.submitBtn').click()
+            'input[name="mfid_user[email]"]').send_keys(mf_username)
+        logger.debug('username')
+        self.find_element_by_css_selector('#submitto').click()
+        logger.debug('submit')
         self.wait()
 
         time.sleep(3)
         self.find_element_by_css_selector(
-            'input.inputItem').send_keys(mf_pass)
-        self.find_element_by_css_selector('input.submitBtn').click()
+            'input[name="mfid_user[password]"]').send_keys(mf_pass)
+        logger.debug('password')
+        self.find_element_by_css_selector('#submitto').click()
+        logger.debug('submit 2')
         self.wait()
         self.check_url('https://moneyforward.com')
         logger.debug('done.')
