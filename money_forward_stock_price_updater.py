@@ -8,6 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from fake_useragent import UserAgent
 
 from stock_price import get_current_price
 
@@ -29,6 +30,8 @@ class MoneyForwardDriver(object):
         options = webdriver.ChromeOptions()
 
         if self.headless:
+            ua = UserAgent()
+            user_agent = ua.random
             options.add_argument("--headless")
             options.add_argument("--disable-gpu")
             options.add_argument("--window-size=1280x1696")
@@ -36,10 +39,11 @@ class MoneyForwardDriver(object):
             options.add_argument("--disable-infobars")
             options.add_argument("--no-sandbox")
             options.add_argument("--hide-scrollbars")
-            options.add_argument("--v=99")
+            options.add_argument("--lang=ja-JP")
+            options.add_argument("--blink-settings=imagesEnabled=false")
             options.add_argument("--ignore-certificate-errors")
             options.add_argument("--homedir=/tmp")
-            options.add_argument('--user-agent=Mozilla/5.0')
+            options.add_argument(f'--user-agent={user_agent}')
             options.add_argument('--disable-dev-shm-usage')
 
         self.driver = webdriver.Chrome(options=options)
@@ -99,11 +103,6 @@ class MoneyForwardDriver(object):
         logger.debug(f'start. mf_username: {mf_username}')
         self.get('https://moneyforward.com/sign_in')
         self.find_element_by_css_selector(
-            'a#email > img.ssoBtn').click()
-        logger.debug('email btn')
-        self.wait()
-
-        self.find_element_by_css_selector(
             'input[name="mfid_user[email]"]').send_keys(mf_username)
         logger.debug('username')
         self.find_element_by_css_selector('#submitto').click()
@@ -117,6 +116,13 @@ class MoneyForwardDriver(object):
         self.find_element_by_css_selector('#submitto').click()
         logger.debug('submit 2')
         self.wait()
+
+        time.sleep(3)
+        logger.debug('skip biometric authentication')
+        self.click_unclickable_element(
+            self.find_element_by_css_selector('a[href^="/oauth"]:not(#submitto)'))
+        self.wait()
+
         self.check_url('https://moneyforward.com')
         logger.debug('done.')
 

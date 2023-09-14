@@ -14,7 +14,8 @@ RUN apt-get update -qq \
 RUN pip --no-cache-dir install \
 	chromedriver-binary~=`google-chrome --version | sed -e 's/\([A-Za-z ]*\)\([0-9]*\.[0-9]*\).*/\2/g'` \
 	selenium \
-	yahoo-finance-api2
+	yahoo-finance-api2 \
+	fake-useragent
 
 ENV MF_USERNAME=mf_username \
 	MF_PASS=mf_pass

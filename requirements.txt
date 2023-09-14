@@ -1,3 +1,4 @@
 chromedriver-binary
 selenium
 yahoo-finance-api2
+fake-useragent
