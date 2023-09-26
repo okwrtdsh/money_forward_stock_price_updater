@@ -62,11 +62,14 @@ class MoneyForwardDriver(object):
         self.wait()
         logger.debug('done.')
 
+    def get_current_url(self):
+        return self.driver.current_url
+
     def check_url(self, expected_url):
         logger.debug(f'start. expected_url: {expected_url}')
         if not expected_url.endswith('/'):
             expected_url += '/'
-        actual_url = self.driver.current_url
+        actual_url = self.get_current_url()
         if not actual_url.endswith('/'):
             actual_url += '/'
         assert actual_url == expected_url,\
@@ -100,8 +103,15 @@ class MoneyForwardDriver(object):
         element.send_keys(value)
 
     def sign_in(self, mf_username, mf_pass):
+        self.get('https://moneyforward.com')
+        self.wait()
+
+        logger.debug('click login')
+        self.click_unclickable_element(
+            self.find_element_by_css_selector('.web-sign-in > a'))
+        self.wait()
+
         logger.debug(f'start. mf_username: {mf_username}')
-        self.get('https://moneyforward.com/sign_in')
         self.find_element_by_css_selector(
             'input[name="mfid_user[email]"]').send_keys(mf_username)
         logger.debug('username')
@@ -122,6 +132,22 @@ class MoneyForwardDriver(object):
         self.click_unclickable_element(
             self.find_element_by_css_selector('a[href^="/oauth"]:not(#submitto)'))
         self.wait()
+
+        url = self.get_current_url()
+        if not url.endswith('/'):
+            url += '/'
+        if url == 'https://id.moneyforward.com/':
+            self.get('https://moneyforward.com')
+            self.wait()
+
+            logger.debug('click login')
+            self.click_unclickable_element(
+                self.find_element_by_css_selector('.web-sign-in > a'))
+            self.wait()
+
+            logger.debug('click use this account')
+            self.find_element_by_css_selector('#submitto').click()
+            self.wait()
 
         self.check_url('https://moneyforward.com')
         logger.debug('done.')
