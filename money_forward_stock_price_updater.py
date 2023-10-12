@@ -130,7 +130,7 @@ class MoneyForwardDriver(object):
         time.sleep(3)
         logger.debug('skip biometric authentication')
         self.click_unclickable_element(
-            self.find_element_by_css_selector('a[href^="/oauth"]:not(#submitto)'))
+            self.find_element_by_css_selector('a[href^="/passkey_promotion/finalize_passkey_setup"]:not(#submitto)'))
         self.wait()
 
         url = self.get_current_url()
